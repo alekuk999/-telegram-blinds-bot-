@@ -1,0 +1,11 @@
+import requests
+
+token = "8245588222:AAEMHbb9pabYKSxvffVTg4aWx1LxV7hs_9Y"
+url = "https://telegram-blinds-bot-1.onrender.com/webhook/8245588222:AAEMHbb9pabYKSxvffVTg4aWx1LxV7hs_9Y"
+
+response = requests.post(
+    f"https://api.telegram.org/bot{token}/setWebhook",
+    data={"url": url}
+)
+
+print(response.json())
