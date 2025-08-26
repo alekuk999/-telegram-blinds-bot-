@@ -1,3 +1,4 @@
+
 # main.py
 import os
 import logging
@@ -10,12 +11,12 @@ from telegram.ext import (
     MessageHandler,
     filters,
     ContextTypes,
+    CallbackContext,
     JobQueue
 )
 from datetime import time
 from flask import Flask, request
 import asyncio
-import threading
 
 # Настройка логирования
 logging.basicConfig(
@@ -57,6 +58,7 @@ WORKS_STATIC = [
     }
 ]
 
+# Динамический пул фото
 WORKS_DYNAMIC = []
 
 # === 🔘 Клавиатура ===
@@ -106,7 +108,7 @@ def fetch_blinds_photos():
     except Exception as e:
         logger.error(f"❌ Ошибка: {e}")
 
-async def fetch_blinds_job(context: ContextTypes.DEFAULT_TYPE):
+async def fetch_blinds_job(context: CallbackContext):
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, fetch_blinds_photos)
 
@@ -126,6 +128,8 @@ async def work(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"❌ Ошибка: {e}")
 
+# ... остальные команды: tip, promo, post
+
 # === ✅ Вебхук ===
 @app.route('/webhook/<string:token>', methods=['POST'])
 def webhook(token):
@@ -133,7 +137,7 @@ def webhook(token):
         return 'Unauthorized', 401
     if request.is_json:
         update = Update.de_json(request.get_json(), application.bot)
-        application.create_task(application.process_update(update))
+        asyncio.run(application.update_queue.put(update))
         return 'OK', 200
     return 'Bad Request', 400
 
@@ -141,37 +145,24 @@ def webhook(token):
 def health():
     return '<h1>✅ SMM Bot is Running</h1>', 200
 
-# === 🚀 Запуск бота (асинхронно) ===
-async def start_bot():
+# === 🚀 Запуск ===
+async def setup_bot():
     global application
     application = Application.builder().token(TOKEN).build()
+    job_queue = application.job_queue
 
-    # Обработчики
+    job_queue.run_daily(fetch_blinds_job, time(hour=9, minute=0))
+    job_queue.run_daily(daily_morning, time(hour=10, minute=0))
+    job_queue.run_daily(daily_afternoon, time(hour=15, minute=0))
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("work", work))
+    # ... другие обработчики
 
-    # Планировщик
-    job_queue = application.job_queue
-    job_queue.run_daily(fetch_blinds_job, time(hour=9, minute=0))
-    job_queue.run_daily(daily_morning, time(hour=10, minute=0))  # ⚠️ Убедись, что функция определена
-    job_queue.run_daily(daily_afternoon, time(hour=15, minute=0))  # ⚠️
+    await application.bot.set_webhook(url=f"https://{os.getenv('RENDER_EXTERNAL_HOSTNAME')}.onrender.com/webhook/{TOKEN}")
+    logger.info("✅ Вебхук установлен")
+    job_queue.start()
 
-    # Установка вебхука
-    webhook_url = f"https://{os.getenv('RENDER_EXTERNAL_HOSTNAME')}.onrender.com/webhook/{TOKEN}"
-    await application.bot.set_webhook(url=webhook_url)
-    logger.info(f"✅ Вебхук установлен: {webhook_url}")
-
-    # Запуск polling (не используется, но нужен для запуска job_queue)
-    await application.run_polling(stop_signals=None)  # stop_signals=None — чтобы не ловило Ctrl+C
-
-# === 🚀 Запуск Flask в отдельном потоке ===
-def run_flask():
-    app.run(host="0.0.0.0", port=PORT)
-
-# === 🏁 Точка входа ===
 if __name__ == '__main__':
-    # Запускаем Flask в отдельном потоке
-    threading.Thread(target=run_flask, daemon=True).start()
-
-    # Запускаем бота асинхронно
-    asyncio.run(start_bot())
+    asyncio.run(setup_bot())
+    app.run(host="0.0.0.0", port=PORT)
