@@ -1,4 +1,9 @@
-# main.py
+# main.async def setup_application():
+    global application
+    print("Инициализация приложения бота...")
+    application = Application.builder().token(TOKEN).build()
+    await application.initialize()
+    print("✅ Приложение бота инициализировано")
 import os
 import logging
 from flask import Flask, request
