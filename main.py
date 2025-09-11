@@ -15,7 +15,17 @@ import telebot
 from telebot import types
 
 # === Настройки приложения ===
+app = Flask(__name__)from flask import Flask, request
+
 app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def handle_webhook():
+    # Получаем JSON-данные, отправленные Telegram
+    update = request.get_json()
+    # Обрабатываем обновление (например, отправляем ответ, управляем жалюзи и т.д.)
+    # ... ваша логика здесь ...
+    return 'OK', 200 # Возвращаем 200 OK, чтобы подтвердить получение
 
 # === Переменные окружения ===
 BOT_TOKEN = os.getenv("BOT_TOKEN")
