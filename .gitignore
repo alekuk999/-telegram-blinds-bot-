@@ -1,0 +1,4 @@
+.env
+__pycache__
+*.pyc
+blinds_bot.db
