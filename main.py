@@ -803,7 +803,7 @@ def set_webhook():
     # 🔥 ИСПРАВЛЕНО: УБРАН ПОРТ 8000, ИСПОЛЬЗУЕМ 443 (стандартный HTTPS)
     webhook_url = f"https://{hostname}/webhook"  # ← ПОРТ 443 ПОДРАЗУМЕВАЕТСЯ ПО УМОЛЧАНИЮ
 
-    print(f"🔧 [WEBHOOK] Попытка установить вебхук на: {webhook_url}")
+    print(f"🔧 [WEBHOOK] Попытка установить вебхук на:{webhook_url}")
 
     try:
         # 🛠 ИСПРАВЛЕНО: УБРАЛИ remove_webhook() — он вызывает 404
@@ -813,7 +813,7 @@ def set_webhook():
 
         result_set = bot.set_webhook(url=webhook_url)
         if result_set:
-            print(f"✅ [WEBHOOK] Вебхук успешно установлен: {webhook_url}")
+            print(f"✅ [WEBHOOK] Вебхук успешно установлен:{webhook_url}")
         else:
             print(f"❌ [WEBHOOK] Метод set_webhook вернул False для URL: {webhook_url}")
     except Exception as e:
