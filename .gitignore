@@ -1,0 +1,18 @@
+# База данных
+blinds_bot.db
+*.sqlite
+*.sqlite3
+
+# Переменные окружения
+.env
+.env.local
+
+# Кэш и логи
+__pycache__/
+*.pyc
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
