@@ -1,6 +1,4 @@
 
-openai
-requests
-beautifulsoup4
-selenium
-webdriver-manager
+Flask==3.0.3
+pyTelegramBotAPI==4.18.1
+gunicorn==20.1.0
