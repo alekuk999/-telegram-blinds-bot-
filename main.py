@@ -808,7 +808,7 @@ def head():
     return '', 200
 
 def set_webhook():
-    hostname = os.getenv('HOSTNAME', 'your-app.twc1.net').strip()
+    hostname = os.getenv('HOSTNAME', 'alekuk999-telegram-blinds-bot--f681.twc1.net').strip()
     webhook_url = f"https://{hostname}/webhook"
     try:
         result = bot.set_webhook(url=webhook_url)
