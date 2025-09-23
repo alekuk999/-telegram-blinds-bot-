@@ -1,8 +1,4 @@
-# blinds_bot.py
-import os
-import asyncio
-import logging
-from telegram import Update
+
 from telegram.ext import Application, CommandHandler, ContextTypes
 from dotenv import load_dotenv
 from datetime import time
@@ -169,39 +165,4 @@ async def gpt_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def daily_morning(context: ContextTypes.DEFAULT_TYPE):
     tip_text = random.choice(TIPS)
     try:
-        await context.bot.send_message(chat_id=CHANNEL_ID, text=tip_text, parse_mode="HTML")
-        logger.info("✅ Утренний пост опубликован")
-    except Exception as e:
-        logger.error(f"Ошибка утреннего поста: {e}")
-
-async def daily_afternoon(context: ContextTypes.DEFAULT_TYPE):
-    item = random.choice(WORKS)
-    try:
-        await context.bot.send_photo(
-            chat_id=CHANNEL_ID,
-            photo=item["photo"],
-            caption=item["caption"]
-        )
-        logger.info("✅ Дневной пост с фото опубликован")
-    except Exception as e:
-        logger.error(f"Ошибка дневного поста: {e}")
-
-# === Запуск бота ===
-if __name__ == "__main__":
-    application = Application.builder().token(BOT_TOKEN).build()
-    job_queue = application.job_queue
-
-    # Расписание (по МСК)
-    job_queue.run_daily(daily_morning,   time(hour=10, minute=0, tzinfo=None))
-    job_queue.run_daily(daily_afternoon, time(hour=15, minute=0, tzinfo=None))
-
-    # Команды
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("tip", tip))
-    application.add_handler(CommandHandler("promo", promo))
-    application.add_handler(CommandHandler("work", work))
-    application.add_handler(CommandHandler("gpt", gpt_post))
-
-    print("🚀 Бот запущен! Публикации по расписанию: 10:00 и 15:00")
-    application.run_polling()
+        await context.bot.send_message(chat_id=CHANNEL_ID, text=
