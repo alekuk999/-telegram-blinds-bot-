@@ -1,4 +1,5 @@
-import os
+from dotenv import load_dotenv
+load_dotenv()import os
 import threading
 import time
 import logging
