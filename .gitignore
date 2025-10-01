@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+blinds_bot.db
+.DS_Store
+venv/
+.env.local
